@@ -1,0 +1,46 @@
+---
+- name: Import assert.yml
+  ansible.builtin.import_tasks: assert.yml
+  run_once: true
+  delegate_to: localhost
+
+- name: Initalize variables
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: variables
+
+- name: Setup postgresql
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: setup-RedHat
+
+- name: Init postgresql
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: initialize
+
+- name: Configure postgresql
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: configure
+
+- name: Ensure PostgreSQL is started and enabled on boot.
+  ansible.builtin.service:
+    name: "{{ postgresql_daemon }}"
+    state: "{{ postgresql_service_state }}"
+    enabled: "{{ postgresql_service_enabled }}"
+
+- name: Create Postgresql users
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: users
+
+- name: Create Postgresql databases
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: databases
+
+- name: Ensure PostgreSQL users are configured correctly
+  ansible.builtin.include_role:
+    name: geerlingguy.postgresql
+    tasks_from: users_props

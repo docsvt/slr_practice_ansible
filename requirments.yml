@@ -1,0 +1,5 @@
+---
+
+roles:
+  - nginxinc.nginx
+  - geerlingguy.postgresql
