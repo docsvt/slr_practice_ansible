@@ -8,6 +8,7 @@ Vagrant.configure("2") do |config|
     libvirt.memory = "4096"
   end
   
+  config.vm.box_check_update = false
   config.vm.define "pnode" do |pnode|
     pnode.vm.box = "centos/7"
     pnode.vm.hostname = "pnode"
