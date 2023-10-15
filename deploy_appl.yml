@@ -53,3 +53,28 @@
         xpaste_db_user: "{{ app_xpaste_db_user }}"
         xpaste_db_password: "{{ app_xpaste_db_password }}"
         xpaste_socket: "{{ app_xpaste_socket }}"
+        xpaste_project_root: "{{ app_xpaste_project_root }}"
+
+- name: Setup nginx to server xpaste application
+  hosts: xpaste
+  become: true
+  tags: setup_nginx
+  tasks:
+    - name: Remove all additional configuration files in /etc/nginx/conf.d
+      ansible.builtin.meta: noop
+    - name: Set SELinux to permissive # TODO check current state of SELinux
+      ansible.posix.selinux:
+        state: permissive
+        policy: targeted
+    - name: Copy bundled nginx configuration file
+      ansible.builtin.template:
+        src: "templates/nginx.conf.j2"
+        dest: "/etc/nginx/nginx.conf"
+        mode: "0644"
+        register: __deploy_xpaste_nginx_conf
+  handlers:
+    - name: Restart nginx service
+      ansible.builtin.service:
+        name: "nginx"
+        state: "restarted"
+    

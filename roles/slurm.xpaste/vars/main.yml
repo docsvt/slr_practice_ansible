@@ -21,3 +21,6 @@ xpaste_db_user: xpasteuser
 
 # xpaste database user password
 xpaste_db_password: xpaste_password
+
+# Where xpaste code will be deployed
+xpaste_project_root: /xpaste

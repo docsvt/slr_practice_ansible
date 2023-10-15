@@ -23,3 +23,5 @@ app_xpaste_db_password: !vault |
           3835
 # For nginx + xpaste consentense
 app_xpaste_socket: "/var/run/puma.sock"
+# Where xpaste code will be deployed
+app_xpaste_project_root: /xpaste

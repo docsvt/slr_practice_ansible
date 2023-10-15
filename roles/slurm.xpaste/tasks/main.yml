@@ -8,8 +8,8 @@
 - name: Install ruby from source on target host
   vars:
     ruby_install_from_source: true
-    ruby_version: "2.5.9"
-    ruby_download_url: "http://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.9.tar.gz"
+    ruby_version: "2.5.9" # TODO take away to default variable
+    ruby_download_url: "http://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.9.tar.gz" # TODO take away to default variable
     ruby_install_bundler: false
   become: true
   ansible.builtin.import_role:
@@ -18,7 +18,7 @@
   community.general.gem:
     name: bundler
     state: present
-    version: "1.16.2"
+    version: "1.16.2" # TODO take away to default variable
     user_install: false
 - name: Copy application to deploy
   ansible.builtin.copy:

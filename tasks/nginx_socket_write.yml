@@ -1,0 +1,35 @@
+# 
+# Quick and dirty
+#  
+# See https://gist.github.com/michailw/a30442c9a8f18575fc5ef95b6758cd88
+
+---
+- name: "SELinux - allow nginx write to socket - check if module was loaded"
+  ansible.builtin.shell: "semodule --list-modules | grep nginx_socket_write"
+  register: nginx_socket_write_loaded
+  ignore_errors: true
+
+- name: "SELinux - allow nginx write to socket - copy type enforcement file"
+  ansible.builtin.template:
+      src: files/nginx_socket_write.te
+      dest: /root/nginx_socket_write.te
+      mode: "0644"
+  when: nginx_socket_write_loaded|failed
+
+- name: "SELinux - allow nginx write to socket - checkmodule"
+  ansible.builtin.command: "checkmodule -M -m -o nginx_socket_write.mod nginx_socket_write.te"
+  args:
+      chdir: /root
+      creates: nginx_socket_write.mod
+  when: nginx_socket_write_loaded|failed
+
+- name: "SELinux - allow nginx write to socket - semodule_package"
+  ansible.builtin.command: "semodule_package -o nginx_socket_write.pp -m nginx_socket_write.mod"
+  args:
+      chdir: /root
+      creates: nginx_socket_write.pp
+  when: nginx_socket_write_loaded|failed
+
+- name: "SELinux - allow nginx write to socket - semodule install"
+  ansible.builtin.command: "semodule -i nginx_socket_write.pp"
+  when: nginx_socket_write_loaded|failed

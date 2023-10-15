@@ -1,6 +1,5 @@
 ---
-# Where xpaste code will be deployed
-xpaste_project_root: /xpaste
+
 
 xpaste_tails_log_to_stdout: "1"
 
