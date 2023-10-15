@@ -28,14 +28,14 @@
         postgresql_service_state: "started"
         postgresql_service_enabled: true
         postgresql_users:
-          - name: "{{ xpaste_db_user }}"
-            password: "{{ xpaste_db_password }}"
+          - name: "{{ app_xpaste_db_user }}"
+            password: "{{ app_xpaste_db_password }}"
             encrypted: true
-            db: "{{ xpaste_db_name }}"
+            db: "{{ app_xpaste_db_name }}"
             state: "present"
         postgresql_databases:
-          - name: "{{ xpaste_db_name }}"
-            owner: "{{ xpaste_db_user }}"
+          - name: "{{ app_xpaste_db_name }}"
+            owner: "{{ app_xpaste_db_user }}"
             state: "present"
 
 - name: Deploy application
@@ -44,7 +44,12 @@
   roles:
     - role: slurm.xpaste
       vars:
-        xpaste_code_src: "files/app/xpaste_practicum"
-
-
-  
+        xpaste_code_src: "{{ app_xpaste_code_src }}"
+        xpaste_secret_key_base: "{{ app_xpaste_secret_key_base }}"
+        xpaste_rail_env: "{{ app_xpaste_rail_env }}"
+        xpaste_db_host: "{{ app_xpaste_db_host }}"
+        xpaste_db_port: "{{ app_xpaste_db_port }}"
+        xpaste_db_name: "{{ app_xpaste_db_name }}"
+        xpaste_db_user: "{{ app_xpaste_db_user }}"
+        xpaste_db_password: "{{ app_xpaste_db_password }}"
+        xpaste_socket: "{{ app_xpaste_socket }}"
