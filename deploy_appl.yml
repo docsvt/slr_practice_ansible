@@ -22,6 +22,8 @@
 - name: Deploy postgresql
   hosts: xpaste
   become: true
+  roles:
+    - role: slurm.postgresql
   vars:
     postgresql_service_state: "started"
     postgresql_service_enabled: true
@@ -35,6 +37,12 @@
       - name: "{{ xpaste_db_name }}"
         owner: "{{ xpaste_db_user }}"
         state: "present"
-  tags: postgresql # for debug propose
+
+- name: Deploy application
+  hosts: xpaste
+  become: true
+  vars:
+    xpaste_code_src: "files/app/xpaste_practicum"
   roles:
-    - slurm_postgresql
+    - slurm.xpaste
+  
