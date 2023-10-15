@@ -2,6 +2,8 @@ galaxy_info:
   author: Serguei Tokovenko
   description: Install and setup postgresql engine on CentOS 7
   company: CoEng
+  role_name: postgresql  # if absent directory name hosting role is used instead
+  namespace: slurm  # if absent, author is used instead
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
