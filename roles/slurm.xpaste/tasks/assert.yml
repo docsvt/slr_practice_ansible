@@ -1,0 +1,12 @@
+---
+
+- name: Test if operating eviroment suitable for role
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - ansible_distribution == "CentOS"
+      - ansible_distribution_major_version | int == 7
+
+- name: Prepare target target host operating system
+  
+

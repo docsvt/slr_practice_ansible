@@ -1,0 +1,32 @@
+---
+- name: Fail if molecule group is missing
+  hosts: localhost
+  tasks:
+    - name: Print some info
+      ansible.builtin.debug:
+        msg: "{{ groups }}"
+
+    - name: Assert group existence
+      ansible.builtin.assert:
+        that: "'molecule' in groups"
+        fail_msg: |
+          molecule group was not found inside inventory groups: {{ groups }}
+
+- name: Converge
+  hosts: molecule
+  become: true
+  tasks:
+    - name: "Include slurm.xpaste role"
+      vars:
+        xpaste_code_src: "../../../files/app/xpaste_practicum"
+        xpaste_project_root: "/xpaste"
+        xpaste_secret_key_base: 9123reqguweygc1o238poainoipnecqb987yrf12c3yr013y
+        xpaste_rail_env: production
+        xpaste_tails_log_to_stdout: "1"
+        xpaste_db_host: 127.0.0.1
+        xpaste_db_port: 5432
+        xpaste_db_name: xpastedb
+        xpaste_db_user: xpasteuser
+        xpaste_db_password: xpaste_password
+      ansible.builtin.include_role:
+        name: "slurm.xpaste"

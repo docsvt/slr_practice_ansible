@@ -24,25 +24,27 @@
   become: true
   roles:
     - role: slurm.postgresql
-  vars:
-    postgresql_service_state: "started"
-    postgresql_service_enabled: true
-    postgresql_users:
-      - name: "{{ xpaste_db_user }}"
-        password: "{{ xpaste_db_password }}"
-        encrypted: true
-        db: "{{ xpaste_db_name }}"
-        state: "present"
-    postgresql_databases:
-      - name: "{{ xpaste_db_name }}"
-        owner: "{{ xpaste_db_user }}"
-        state: "present"
+      vars:
+        postgresql_service_state: "started"
+        postgresql_service_enabled: true
+        postgresql_users:
+          - name: "{{ xpaste_db_user }}"
+            password: "{{ xpaste_db_password }}"
+            encrypted: true
+            db: "{{ xpaste_db_name }}"
+            state: "present"
+        postgresql_databases:
+          - name: "{{ xpaste_db_name }}"
+            owner: "{{ xpaste_db_user }}"
+            state: "present"
 
 - name: Deploy application
   hosts: xpaste
   become: true
-  vars:
-    xpaste_code_src: "files/app/xpaste_practicum"
   roles:
-    - slurm.xpaste
+    - role: slurm.xpaste
+      vars:
+        xpaste_code_src: "files/app/xpaste_practicum"
+
+
   

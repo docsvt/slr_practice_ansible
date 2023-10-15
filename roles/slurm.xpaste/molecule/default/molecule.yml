@@ -1,0 +1,26 @@
+---
+
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: docker
+platforms:
+  - name: molecule-centos-7
+    image: centos-7
+provisioner:
+  name: ansible
+  inventory:
+    group_vars:
+      all:
+        xpaste_code_src: "../../../files/app/xpaste_practicum"
+        xpaste_project_root: /xpaste
+        xpaste_secret_key_base: 9123reqguweygc1o238poainoipnecqb987yrf12c3yr013y
+        xpaste_rail_env: production
+        xpaste_tails_log_to_stdout: "1"
+        xpaste_db_host: 127.0.0.1
+        xpaste_db_port: 5432
+        xpaste_db_name: xpastedb
+        xpaste_db_user: xpasteuser
+        xpaste_db_password: xpaste_password

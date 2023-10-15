@@ -1,0 +1,52 @@
+---
+
+- name: Import assert.yml
+  ansible.builtin.import_tasks: assert.yml
+  run_once: true
+  delegate_to: localhost
+
+- name: Install ruby from source on target host
+  vars:
+    ruby_install_from_source: true
+    ruby_version: "2.5.9"
+    ruby_download_url: "http://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.9.tar.gz"
+    ruby_install_bundler: false
+  become: true
+  ansible.builtin.import_role:
+    name: "geerlingguy.ansible-role-ruby"
+- name: Install Bundler specific version for xpaste.
+  community.general.gem:
+    name: bundler
+    state: present
+    version: "1.16.2"
+    user_install: false
+- name: Copy application to deploy
+  ansible.builtin.copy:
+    src: "{{ xpaste_code_src }}/"
+    dest: "{{ xpaste_project_root }}/"
+    mode: "0644"
+    directory_mode: "0755"
+- name: Configure nokogiri builder
+  ansible.builtin.command:
+    cmd: /usr/local/bin/bundle config build.nokogiri --use-system-libraries
+  args:
+    chdir: "{{ xpaste_project_root }}"
+- name: Add development libraries for building
+  ansible.builtin.package:
+    name:
+      - libxml2-devel
+      - libxslt-devel
+      - postgresql-devel
+# - name: Build bundle for xpaste application
+#   ansible.builtin.command:
+#     cmd: /usr/local/bin/bundle install --clean --no-cache --without development
+#   args:
+#     chdir: "{{ xpaste_project_root }}"
+- name: Build bundle for xpaste application
+  community.general.bundler:
+    chdir: "{{ xpaste_project_root }}"
+    exclude_groups: development
+    clean: true
+    executable: "/usr/local/bin/bundle"
+  register: __xpaste_bundler_ret
+  failed_when: not "Bundle complete!" in __xpaste_bundler_ret.stdout
