@@ -1,0 +1,21 @@
+[Unit]
+Description={{ xpaste_systemd_service }}
+After=network.target
+
+[Service]
+WorkingDirectory={{ xpaste_project_root }}
+Environment=SECRET_KEY_BASE={{ xpaste_secret_key_base}}
+Environment=RAILS_ENV={{ xpaste_rail_env }}
+Environment=RAILS_LOG_TO_STDOUT={{ xpaste_tails_log_to_stdout }}
+Environment=DB_HOST={{ xpaste_db_host }}
+Environment=DB_PORT={{ xpaste_db_port }}
+Environment=DB_NAME={{ xpaste_db_name }}
+Environment=DB_USER={{ xpaste_db_user }}
+Environment=DB_PASSWORD={{xpaste_db_password}}
+Type=simple
+User=root
+ExecStart=/bin/bash -c '/usr/local/bin/bundle exec rake db:migrate && /usr/local/bin/bundle exec puma -b unix://{{ xpaste_socket }} -e $RAILS_ENV config.ru'
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

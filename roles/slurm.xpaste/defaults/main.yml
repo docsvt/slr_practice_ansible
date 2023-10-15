@@ -1,2 +1,10 @@
 ---
-# defaults file for xpaste
+# Where xpaste code will be deployed
+xpaste_project_root: /xpaste
+
+xpaste_tails_log_to_stdout: "1"
+
+xpaste_socket: /var/run/puma.sock
+
+# systemd service name
+xpaste_systemd_service: xpaste

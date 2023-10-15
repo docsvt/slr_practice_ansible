@@ -3,15 +3,10 @@
 
 xpaste_code_src: https://gitlab.slurm.io/edu/xpaste_practicum
 
-# Where xpaste code will be deployed
-xpaste_project_root: /xpaste
-
 # Where xpaste secret code
 xpaste_secret_key_base: "qwwertyuiopasdfghjk1234567890"
 
 xpaste_rail_env: production
-
-xpaste_tails_log_to_stdout: "1"
 
 # xpaste database host
 xpaste_db_host: "127.0.0.1"

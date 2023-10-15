@@ -31,12 +31,17 @@
     cmd: /usr/local/bin/bundle config build.nokogiri --use-system-libraries
   args:
     chdir: "{{ xpaste_project_root }}"
+- name: Add epel release for nodejs
+  ansible.builtin.package:
+    name:
+      - epel-release
 - name: Add development libraries for building
   ansible.builtin.package:
     name:
       - libxml2-devel
       - libxslt-devel
       - postgresql-devel
+      - nodejs
 # - name: Build bundle for xpaste application
 #   ansible.builtin.command:
 #     cmd: /usr/local/bin/bundle install --clean --no-cache --without development
@@ -50,3 +55,26 @@
     executable: "/usr/local/bin/bundle"
   register: __xpaste_bundler_ret
   failed_when: not "Bundle complete!" in __xpaste_bundler_ret.stdout
+
+- name: Build bundle for xpaste application
+  community.general.bundler:
+    chdir: "{{ xpaste_project_root }}"
+    exclude_groups: development
+    clean: true
+    executable: "/usr/local/bin/bundle"
+  register: __xpaste_bundler_ret
+  failed_when: not "Bundle complete!" in __xpaste_bundler_ret.stdout
+
+- name: Create systemd service unit
+  tags: systemd
+  ansible.builtin.template:
+    src: ./templates/xpaste.service.j2
+    dest: /etc/systemd/system/xpaste.service
+    mode: "0644"
+- name: "Enable and (re)start service {{ xpaste_systemd_service }}"
+  tags: systemd
+  ansible.builtin.systemd:
+    name: "{{ xpaste_systemd_service }}"
+    daemon_reload: true
+    enabled: true
+    state: "started"
