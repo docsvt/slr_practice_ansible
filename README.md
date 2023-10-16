@@ -23,6 +23,7 @@
 1. Создать машину
    
 ``` vagrant up```
+
 2. Скачать git clone https://gitlab.slurm.io/edu/xpaste_practicum в ./files/app/
 3. Проверить параметры хоста в group_vars/xpaste.yml, особенно *app_xpaste_code_src*
 4. Скачать requirments 
