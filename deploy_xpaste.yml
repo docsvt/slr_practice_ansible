@@ -1,7 +1,6 @@
 ---
 - name: Check target systems prerequisists
   hosts: xpaste
-  become: true
   tasks:
     - name: Test if target operating eviroment CentOS 7
       delegate_to: localhost
@@ -14,7 +13,6 @@
 - name: Deploy nginx core
   hosts: xpaste
   become: true
-  tags: nginx # for debug propose
   roles:
     - nginxinc.nginx
 
@@ -27,7 +25,8 @@
         xpastedb_user: "{{ app_xpaste_db_user }}"
         xpastedb_password: "{{ app_xpaste_db_password }}"
         xpastedb_db: "{{ app_xpaste_db_name }}"
-- name: Deploy application
+
+- name: Deploy xpaste application
   hosts: xpaste
   become: true
   roles:
