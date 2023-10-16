@@ -1,0 +1,14 @@
+---
+
+- name: "Сheck the status of the remote server from localhost"
+  ansible.builtin.uri:
+    url: "{{ __deploy_xpaste_app_uri }}"
+    method: GET
+    timeout: 30
+    return_content: true
+  register: __deploy_xpaste_url_out
+- name: Check Xpaste application health
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - __deploy_xpaste_url_out.content is ansible.builtin.search("<title>xPaste</title>")
