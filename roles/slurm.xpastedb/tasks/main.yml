@@ -4,6 +4,22 @@
   run_once: true
   delegate_to: localhost
 
+- name: Initalize input variables for geerlingguy.postgresql
+  ansible.builtin.set_fact:
+    postgresql_service_state: "{{ xpastedb_service_state }}"
+    postgresql_service_enabled: "{{ xpastedb_service_enabled }}"
+    postgresql_users:
+      - name: "{{ xpastedb_user }}"
+        password: "{{ xpastedb_password }}"
+        encrypted: true
+        db: "{{ xpastedb_db }}"
+        state: "present"
+    postgresql_databases:
+      - name: "{{ xpastedb_db }}"
+        owner: "{{ xpastedb_user }}"
+        state: "present"
+
+
 - name: Initalize variables
   ansible.builtin.include_role:
     name: geerlingguy.postgresql

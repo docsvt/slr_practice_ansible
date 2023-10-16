@@ -1,2 +1,5 @@
 ---
 # vars file for slurm_postgresql
+xpastedb_user: xpaste
+xpastedb_password: ""
+xpastedb_db: "xpastedb"

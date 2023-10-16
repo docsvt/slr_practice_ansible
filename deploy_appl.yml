@@ -24,19 +24,9 @@
   roles:
     - role: slurm.xpastedb
       vars:
-        postgresql_service_state: "started"
-        postgresql_service_enabled: true
-        postgresql_users:
-          - name: "{{ app_xpaste_db_user }}"
-            password: "{{ app_xpaste_db_password }}"
-            encrypted: true
-            db: "{{ app_xpaste_db_name }}"
-            state: "present"
-        postgresql_databases:
-          - name: "{{ app_xpaste_db_name }}"
-            owner: "{{ app_xpaste_db_user }}"
-            state: "present"
-
+        xpastedb_user: "{{ app_xpaste_db_user }}"
+        xpastedb_password: "{{ app_xpaste_db_password }}"
+        xpastedb_db: "{{ app_xpaste_db_name }}"
 - name: Deploy application
   hosts: xpaste
   become: true
@@ -62,7 +52,7 @@
     - name: Set SELinux to permissive # TODO check current state of SELinux
       ansible.posix.selinux:
         state: permissive
-        policy: targeted
+        policy: targeted      
     - name: Find all *.conf files in /etc/nginx/conf.d
       ansible.builtin.find:
         paths: /etc/nginx/conf.d

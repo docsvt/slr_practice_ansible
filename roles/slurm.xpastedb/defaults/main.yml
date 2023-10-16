@@ -1,2 +1,3 @@
 ---
-# defaults file for slurm_postgresql
+xpastedb_service_state: "started"
+xpastedb_service_enabled: true
