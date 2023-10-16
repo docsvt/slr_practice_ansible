@@ -5,63 +5,73 @@
   run_once: true
   delegate_to: localhost
 
-- name: Install ruby from source on target host
-  vars:
-    ruby_install_from_source: true
-    ruby_version: "2.5.9" # TODO take away to default variable
-    ruby_download_url: "http://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.9.tar.gz" # TODO take away to default variable
-    ruby_install_bundler: false
-  become: true
-  ansible.builtin.import_role:
-    name: "geerlingguy.ansible-role-ruby"
-- name: Install Bundler specific version for xpaste.
-  community.general.gem:
-    name: bundler
-    state: present
-    version: "1.16.2" # TODO take away to default variable
-    user_install: false
+- name: Add additional repositories for ruby and node js
+  ansible.builtin.package:
+    name:
+      - epel-release
+      - centos-release-scl
+
+- name: Recalculate ruby prefix for repository
+  ansible.builtin.set_fact:
+    __xpaste_ruby_pkg_version: "{{ xpaste_ruby_version | replace('.', '') }}"
+
+- name: Recalculate ruby root
+  ansible.builtin.set_fact:
+    __xpaste_ruby_root: "/opt/rh/rh-ruby{{ __xpaste_ruby_pkg_version }}/root"
+
+- name: Add ruby packages
+  ansible.builtin.package:
+    name:
+      - "rh-ruby{{ __xpaste_ruby_pkg_version }}"
+      - "rh-ruby{{ __xpaste_ruby_pkg_version }}-scldevel"
+      - "rh-ruby{{ __xpaste_ruby_pkg_version }}-rubygem-bundler"
+      - "rh-ruby{{ __xpaste_ruby_pkg_version }}-ruby-devel"
+
+- name: Put ld config file for ruby shared libraries
+  ansible.builtin.copy:
+    content: "{{ __xpaste_ruby_root }}/lib64"
+    dest: "/etc/ld.so.conf.d/rh-ruby{{ __xpaste_ruby_pkg_version }}.conf"
+    mode: "0644"
+  register: __xpaste_ruby_ldconfig
+
+- name: Rerun ldconfig # noqa: no-handler
+  ansible.builtin.command: ldconfig
+  when: __xpaste_ruby_ldconfig.changed
+  changed_when: true # If __xpaste_ruby_ldconfig.changes then ldconfig - changed
+
 - name: Copy application to deploy
   ansible.builtin.copy:
     src: "{{ xpaste_code_src }}/"
     dest: "{{ xpaste_project_root }}/"
     mode: "0644"
     directory_mode: "0755"
+
 - name: Configure nokogiri builder
   ansible.builtin.command:
-    cmd: /usr/local/bin/bundle config build.nokogiri --use-system-libraries
+    argv:
+      - "{{ __xpaste_ruby_root }}/bin/bundle"
+      - "config"
+      - "build.nokogiri"
+      - "--use-system-libraries"
   args:
     chdir: "{{ xpaste_project_root }}"
-- name: Add epel release for nodejs
-  ansible.builtin.package:
-    name:
-      - epel-release
+  changed_when: false
+
 - name: Add development libraries for building
   ansible.builtin.package:
     name:
-      - libxml2-devel
-      - libxslt-devel
-      - postgresql-devel
-      - nodejs
-# - name: Build bundle for xpaste application
-#   ansible.builtin.command:
-#     cmd: /usr/local/bin/bundle install --clean --no-cache --without development
-#   args:
-#     chdir: "{{ xpaste_project_root }}"
-- name: Build bundle for xpaste application
-  community.general.bundler:
-    chdir: "{{ xpaste_project_root }}"
-    exclude_groups: development
-    clean: true
-    executable: "/usr/local/bin/bundle"
-  register: __xpaste_bundler_ret
-  failed_when: not "Bundle complete!" in __xpaste_bundler_ret.stdout
+      - "@development tools"
+      - "libxml2-devel"
+      - "libxslt-devel"
+      - "postgresql-devel"
+      - "nodejs"
 
 - name: Build bundle for xpaste application
   community.general.bundler:
     chdir: "{{ xpaste_project_root }}"
     exclude_groups: development
     clean: true
-    executable: "/usr/local/bin/bundle"
+    executable: "{{ __xpaste_ruby_root }}/bin/bundle"
   register: __xpaste_bundler_ret
   failed_when: not "Bundle complete!" in __xpaste_bundler_ret.stdout
 

@@ -2,8 +2,4 @@
 
 roles:
   - name: nginxinc.nginx
-  - name: geerlingguy.postgresql
-  - name: geerlingguy.ansible-role-ruby
-    version: 3.2.0
-    src: https://github.com/geerlingguy/ansible-role-ruby
-    
+  - name: geerlingguy.postgresql    

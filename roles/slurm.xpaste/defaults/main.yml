@@ -7,3 +7,6 @@ xpaste_socket: /var/run/puma.sock
 
 # systemd service name
 xpaste_systemd_service: xpaste
+
+# xpaste ruby version
+xpaste_ruby_version: "2.6"

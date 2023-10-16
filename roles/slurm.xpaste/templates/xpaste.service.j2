@@ -14,7 +14,7 @@ Environment=DB_USER={{ xpaste_db_user }}
 Environment=DB_PASSWORD={{xpaste_db_password}}
 Type=simple
 User=root
-ExecStart=/bin/bash -c '/usr/local/bin/bundle exec rake db:migrate && /usr/local/bin/bundle exec puma -b unix://{{ xpaste_socket }} -e $RAILS_ENV config.ru'
+ExecStart=/bin/bash -c 'export PATH={{ __xpaste_ruby_root }}/bin:$PATH && bundle exec rake db:migrate && bundle exec puma -b unix://{{ xpaste_socket }} -e $RAILS_ENV config.ru'
 Restart=on-failure
 
 [Install]
