@@ -22,7 +22,7 @@
   hosts: xpaste
   become: true
   roles:
-    - role: slurm.postgresql
+    - role: slurm.xpastedb
       vars:
         postgresql_service_state: "started"
         postgresql_service_enabled: true
