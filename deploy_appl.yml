@@ -49,10 +49,13 @@
   become: true
   tags: setup_nginx
   tasks:
-    - name: Set SELinux to permissive # TODO check current state of SELinux
+    - name: Set SELinux to permissive
       ansible.posix.selinux:
         state: permissive
-        policy: targeted      
+        policy: targeted
+      when:
+        - ansible_selinux.status == "enabled"
+        - ansible_selinux.mode != "permissive"
     - name: Find all *.conf files in /etc/nginx/conf.d
       ansible.builtin.find:
         paths: /etc/nginx/conf.d
